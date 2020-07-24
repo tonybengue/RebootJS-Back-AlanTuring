@@ -3,6 +3,17 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { configuration, IConfig } from "./config";
 
+import { model, Schema } from 'mongoose';
+import { connect } from './database';
+
+
+const userSchema = new Schema({
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true},
+});
+
+const User = model('User', userSchema);
+
 export function createExpressApp(config: IConfig): express.Express {
   const { express_debug } = config;
 
@@ -18,6 +29,10 @@ export function createExpressApp(config: IConfig): express.Express {
   }) as ErrorRequestHandler);
 
   app.get('/', (req: Request, res: Response) => { res.send('This is the boilerplate for Flint Messenger app') });
+  app.get('/test', async (req: Request, res: Response) => {
+    await new User({firstname: 'Thomas', lastname: 'Falcone'}).save();
+    res.send('Done');
+  })
 
   return app;
 }
@@ -25,4 +40,7 @@ export function createExpressApp(config: IConfig): express.Express {
 const config = configuration();
 const { PORT } = config;
 const app = createExpressApp(config);
-app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`));
+connect(config).then(
+  () => app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`)),
+  (err) => console.error(`Was not able to connect to DB ${err}`)
+);
