@@ -5,7 +5,7 @@ import { configuration, IConfig } from "./config";
 
 import { model, Schema } from 'mongoose';
 import { connect } from './database';
-
+import usersRoutes from './routes/users'
 
 const userSchema = new Schema({
   firstname: { type: String, required: true },
@@ -29,10 +29,7 @@ export function createExpressApp(config: IConfig): express.Express {
   }) as ErrorRequestHandler);
 
   app.get('/', (req: Request, res: Response) => { res.send('This is the boilerplate for Flint Messenger app') });
-  app.get('/test', async (req: Request, res: Response) => {
-    await new User({firstname: 'Thomas', lastname: 'Falcone'}).save();
-    res.send('Done');
-  })
+  app.use('/users', usersRoutes);
 
   return app;
 }
