@@ -35,23 +35,26 @@ export interface IProfile extends Document {
   firstname: string;
   status: string;
   updatedAt: string;
-  conversationsSeen: { [conversationId: string]: string};
+  conversationsSeen: { [conversationId: string]: string };
 }
 
-export type IUser = Pick<IProfile, '_id' | 'lastname' | 'firstname' | 'status' | 'updatedAt' >
+export type IUser = Pick<
+  IProfile,
+  "_id" | "lastname" | "firstname" | "status" | "updatedAt"
+>;
 
 const profileSchema = new Schema({
-  email: { type: String, required: true, unique: true},
-  lastname: { type: String, required: true},
+  email: { type: String, required: true, unique: true },
+  lastname: { type: String, required: true },
   firstname: { type: String, required: true },
   password: { type: String, required: true },
-  status: { type: String, required: true, default: 'Offline' },
+  status: { type: String, required: true, default: "Offline" },
   updatedAt: { type: Date },
   conversationsSeen: {},
-})
+});
 
-profileSchema.pre('save', function () {
+profileSchema.pre("save", function () {
   this.set({ updatedAt: new Date() });
 });
 
-export const User = model<IProfile, Model<IProfile>>('Profile', profileSchema)
+export const User = model<IProfile, Model<IProfile>>("Profile", profileSchema);

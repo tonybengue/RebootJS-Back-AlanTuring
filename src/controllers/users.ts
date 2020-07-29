@@ -1,13 +1,23 @@
-import { User } from "../models/users";
+import { User, IProfile } from "../models/users";
 import { UserNotFoundError } from "../errors";
 
-export function findUser(id : string, next: Function) {
-  User.findById(id, (err, user) => { next(err, user); });
-};
+export function findUser(
+  id: string,
+  next: (err: Error, user: IProfile | null) => any
+) {
+  User.findById(id, (err, user) => {
+    next(err, user);
+  });
+}
 
-export function addNewUser(data: any, next: Function) : void{
+export function addNewUser(
+  data: any,
+  next: (err: Error, prof: IProfile) => any
+): void {
   const newUser = new User(data);
-  newUser.save((err, createdProfile) => { next(err, createdProfile); });
+  newUser.save((err, createdProfile) => {
+    next(err, createdProfile);
+  });
 }
 
 export function deleteUser(id: string, next: (err: Error | null, deleted: boolean) => any): void {
