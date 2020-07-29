@@ -17,6 +17,11 @@ jobs:
     install: npm install
     script: npm test
 
+  - stage: Global Testing
+    name: linting
+    install: npm install
+    script: npm run lint
+
   - stage: ':rocket: Deployment'
     name: ship to heroku TODO
     script: skip
