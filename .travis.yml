@@ -1,0 +1,22 @@
+language: node_js
+node_js: 12
+
+stages:
+  - Global Testing
+  - ':rocket: Deployment'
+
+jobs:
+  include:
+  - stage: Global Testing
+    name: compile
+    install: npm install
+    script: npm build
+
+  - stage: Global Testing
+    name: tests
+    install: npm install
+    script: npm test
+
+  - stage: ':rocket: Deployment'
+    name: ship to heroku TODO
+    script: skip
