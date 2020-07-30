@@ -1,34 +1,5 @@
 import { Document, Schema, model, Model } from "mongoose";
-
-// export class User {
-//   id: number;
-//   firstname: string;
-//   lastname: string;
-
-//   static last_id = 0;
-
-//   constructor(firstname: string, lastname: string){
-//     User.last_id += 1;
-//     this.id = User.last_id;
-//     this.firstname = firstname;
-//     this.lastname = lastname;
-//   }
-
-//   get name(): string{
-//     return `${this.firstname} ${this.lastname}`
-//   }
-
-//   get description(): string{
-//     return `My name is ${this.name}`
-//   }
-
-//   update(data: any): User{
-//     this.firstname = data['firstname'] || this.firstname;
-//     this.lastname = data['lastname'] || this.lastname;
-//     return this
-//   }
-// }
-
+import { SHA256 } from 'crypto-js';
 export interface IProfile extends Document {
   email: string;
   lastname: string;
@@ -36,6 +7,8 @@ export interface IProfile extends Document {
   status: string;
   updatedAt: string;
   conversationsSeen: { [conversationId: string]: string };
+  setPassword(password: string): void;
+  validatePassword(password: string): boolean;
 }
 
 export type IUser = Pick<
@@ -53,6 +26,12 @@ const profileSchema = new Schema({
   conversationsSeen: {},
 });
 
+profileSchema.methods.setPassword = function (password: string): void {
+  this.password = SHA256(password).toString();
+};
+profileSchema.methods.validatePassword = function (password: string): boolean {
+  return this.password === SHA256(password).toString();
+};
 profileSchema.pre("save", function () {
   this.set({ updatedAt: new Date() });
 });

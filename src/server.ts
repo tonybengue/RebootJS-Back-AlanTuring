@@ -1,4 +1,5 @@
 import express, { Request, Response, ErrorRequestHandler } from "express";
+import session from "express-session";
 import morgan from "morgan";
 import helmet from "helmet";
 import { configuration, IConfig } from "./config";
@@ -6,14 +7,28 @@ import { configuration, IConfig } from "./config";
 import { connect } from "./database";
 import usersRoutes from "./routes/users";
 
+import connectMongo from 'connect-mongo';
+import mongoose from "mongoose";
+import { authenticationInitialize, authenticationSession } from "./controllers/authentication";
+const MongoStore = connectMongo(session);
+
 export function createExpressApp(config: IConfig): express.Express {
-  const { express_debug } = config;
+  const { express_debug, session_cookie_name, session_secret } = config;
 
   const app = express();
 
   app.use(morgan("combined"));
   app.use(helmet());
   app.use(express.json());
+  app.use(session({
+    name: session_cookie_name,
+    secret: session_secret,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({mongooseConnection: mongoose.connection})
+  }));
+  app.use(authenticationInitialize());
+  app.use(authenticationSession());
 
   app.use(((err, _req, res, _next) => {
     console.error(err.stack);
@@ -32,7 +47,8 @@ const config = configuration();
 const { PORT } = config;
 const app = createExpressApp(config);
 connect(config).then(
-  () =>
-    app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`)),
+  () => {
+    app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`));
+  },
   (err) => console.error(`Was not able to connect to DB ${err}`)
 );

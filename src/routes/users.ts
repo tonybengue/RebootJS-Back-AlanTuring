@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
 import * as usersController from "../controllers/users";
 import { IProfile } from "../models/users";
+import { authenticationRequired } from "../middlewares/authenticationRequired"
 
 export const router = Router();
 
-router.get("/:userId", (request: Request, response: Response) => {
+router.get("/:userId", authenticationRequired, (request: Request, response: Response) => {
   const id = request.params["userId"];
   if (id === undefined) {
     response.status(400).send("Please provide an ID");

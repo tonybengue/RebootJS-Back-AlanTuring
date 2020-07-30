@@ -5,5 +5,7 @@
   "mongo_user": "flint",
   "mongo_pass": "myPwd",
   "mongo_database": "flint-messenger",
-  "mongo_debug": false
+  "mongo_debug": false,
+  "session_cookie_name": "sid",
+  "session_secret": "a_highly_secret_key"
 }
