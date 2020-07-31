@@ -6,6 +6,8 @@ import { configuration, IConfig } from "./config";
 
 import { connect } from "./database";
 import usersRoutes from "./routes/users";
+import loginRoute from "./routes/login";
+import registerRoute from "./routes/register";
 
 import connectMongo from 'connect-mongo';
 import mongoose from "mongoose";
@@ -39,6 +41,8 @@ export function createExpressApp(config: IConfig): express.Express {
     res.send("This is the boilerplate for Flint Messenger app");
   });
   app.use("/users", usersRoutes);
+  app.use("/login", loginRoute);
+  app.use("/register", registerRoute);
 
   return app;
 }

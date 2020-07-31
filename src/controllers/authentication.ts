@@ -4,9 +4,9 @@ import { Strategy } from 'passport-local';
 import { User, IProfile } from '../models/users';
 
 passport.use(
-  new Strategy((email, password, done) => {
+  new Strategy((username, password, done) => {
     try {
-      User.findOne({email: email}, null, (err: Error, user: IProfile | null) => {
+      User.findOne({email: username}, null, (err: Error, user: IProfile | null) => {
         if(err) { return done(err) };
         if(user){
           const isValid = user.validatePassword(password);
