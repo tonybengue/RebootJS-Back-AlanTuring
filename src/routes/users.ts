@@ -5,6 +5,16 @@ import { authenticationRequired } from "../middlewares/authenticationRequired"
 
 export const router = Router();
 
+router.get("/", authenticationRequired, (request: Request, response: Response) => {
+  usersController.allUsers((err, users) => {
+    if(err) { response.status(500).send("Something went wrong went fetching for all users") }
+    else {
+      response.status(200).json({ users: users })
+    }
+  })
+
+});
+
 router.get("/:userId", authenticationRequired, (request: Request, response: Response) => {
   const id = request.params["userId"];
   if (id === undefined) {
