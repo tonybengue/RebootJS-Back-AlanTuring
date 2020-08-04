@@ -42,11 +42,14 @@ router.delete('/:userId', (request: Request, response: Response) => {
     response.status(400).send("Please provide an ID");
     return;
   }
-  // const user = usersController.findExistingUser(parseInt(id));
-  // if (user == undefined) { response.status(404).send('User not found'); return; }
-  // usersController.deleteUser(user);
-  response.status(200).send('User deleted');
-})
+  usersController.deleteUser(id, (err: Error | null, deleted: boolean) => {
+    if(err || !deleted) {
+      response.status(500).send("Something went wrong during deletion");
+    } else {
+      response.status(200).send("User deleted");
+    }
+  })
+});
 
 router.patch('/:userId', (request, response) => {
   const id = request.params["userId"];
@@ -55,10 +58,13 @@ router.patch('/:userId', (request, response) => {
     response.status(400).send('Please provide a lastname or a firstname');
     return;
   }
-  // const user = usersController.findExistingUser(parseInt(id));
-  // if (user == undefined) { response.status(404).send('User not found'); return; }
-  // user.update(data);
-  response.status(200).send('User updated');
+  usersController.updateUser(id, data, (err, updated) => {
+    if (err || !updated) {
+      response.status(500).send("Something went wrong during update");
+    } else {
+      response.status(200).send("User updated");
+    }
+  })
 });
 
 export default router;
