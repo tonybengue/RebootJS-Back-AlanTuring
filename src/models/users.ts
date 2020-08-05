@@ -7,6 +7,7 @@ export interface IProfile extends Document {
   status: string;
   updatedAt: string;
   conversationsSeen: { [conversationId: string]: string };
+  getSafeProfile(): ISafeProfile;
   setPassword(password: string): void;
   validatePassword(password: string): boolean;
 }
@@ -15,6 +16,8 @@ export type IUser = Pick<
   IProfile,
   "_id" | "lastname" | "firstname" | "status" | "updatedAt"
 >;
+
+export type ISafeProfile = IUser & Pick<IProfile, 'email' | 'conversationsSeen'>;
 
 const profileSchema = new Schema({
   email: { type: String, required: true, unique: true },
@@ -32,6 +35,12 @@ profileSchema.methods.setPassword = function (password: string): void {
 profileSchema.methods.validatePassword = function (password: string): boolean {
   return this.password === SHA256(password).toString();
 };
+
+profileSchema.methods.getSafeProfile = function (): ISafeProfile {
+  const { _id, email, lastname, firstname, status, updatedAt, conversationsSeen } = this;
+  return { _id, email, lastname, firstname, status, updatedAt, conversationsSeen };
+};
+
 profileSchema.pre("save", function () {
   this.set({ updatedAt: new Date() });
 });

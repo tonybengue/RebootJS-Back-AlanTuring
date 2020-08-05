@@ -1,6 +1,6 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, request } from "express";
 import * as usersController from "../controllers/users";
-import { IProfile } from "../models/users";
+import { IProfile, User } from "../models/users";
 import { authenticationRequired } from "../middlewares/authenticationRequired"
 
 export const router = Router();
@@ -13,6 +13,15 @@ router.get("/", authenticationRequired, (request: Request, response: Response) =
     }
   })
 
+});
+
+router.get("/me", authenticationRequired, (request: Request, response: Response) => {
+  User.findById((request.user as any)._id).then(
+    user => {
+      if (!user) throw Error('User not found');
+      response.json(user.getSafeProfile());
+    }
+  );
 });
 
 router.get("/:userId", authenticationRequired, (request: Request, response: Response) => {
