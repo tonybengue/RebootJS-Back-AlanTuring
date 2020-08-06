@@ -9,6 +9,7 @@ import { connect } from "./database";
 import usersRoutes from "./routes/users";
 import loginRoute from "./routes/login";
 import registerRoute from "./routes/register";
+import logoutRoute from "./routes/logout";
 
 import connectMongo from 'connect-mongo';
 import mongoose from "mongoose";
@@ -45,6 +46,7 @@ export function createExpressApp(config: IConfig): express.Express {
   app.use("/users", usersRoutes);
   app.use("/login", loginRoute);
   app.use("/register", registerRoute);
+  app.use('/logout', logoutRoute);
 
   return app;
 }
