@@ -86,11 +86,11 @@ router.patch("/", authenticationRequired, (request, response) => {
       response.status(400).send("Please provide a lastname or a firstname");
       return;
     }
-    usersController.updateUser(user, data, (err, updated) => {
-      if (err || !updated) {
+    usersController.updateUser(user, data, (err, updatedUser) => {
+      if (err || !updatedUser) {
         response.status(500).send("Something went wrong during update");
       } else {
-        response.status(200).send("User updated");
+        response.status(200).json(updatedUser.getSafeProfile());
       }
     })
   });

@@ -38,13 +38,13 @@ export function deleteUser(user: IProfile, next: (err: Error | null, deleted: bo
   return;
 }
 
-export function updateUser(user: IProfile, data: any, next: (err: Error | null, updated: boolean) => any): void {
+export function updateUser(user: IProfile, data: any, next: (err: Error | null, user?: IProfile) => any): void {
   const { firstname, lastname, password } = data;
   user.firstname = firstname;
   user.lastname = lastname;
   if (password) user.setPassword(password);
-  user.save((err, _user) => {
-    if (err) { next(err, false) }
-    else { next(null, true) }
+  user.save((err, user) => {
+    if (err) { next(err) }
+    else { next(null, user) }
   })
 }
