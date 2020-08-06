@@ -7,7 +7,7 @@ export const router = Router();
 
 router.get("/", authenticationRequired, (request: Request, response: Response) => {
   usersController.allUsers((err, users) => {
-    if(err) { response.status(500).send("Something went wrong went fetching for all users") }
+    if (err) { response.status(500).send("Something went wrong went fetching for all users") }
     else {
       response.status(200).json({ users: users })
     }
@@ -65,18 +65,16 @@ router.post("/", (request: Request, response: Response) => {
   });
 });
 
-router.delete("/:userId", (request: Request, response: Response) => {
-  const id = request.params["userId"];
-  if (id == undefined) {
-    response.status(400).send("Please provide an ID");
-    return;
-  }
-  usersController.deleteUser(id, (err: Error | null, deleted: boolean) => {
-    if(err || !deleted) {
-      response.status(500).send("Something went wrong during deletion");
-    } else {
-      response.status(200).send("User deleted");
-    }
+router.delete("/", authenticationRequired, (request: Request, response: Response) => {
+  User.findById((request.user as any)._id).then(user => {
+    if (!user) throw Error('User not found');
+    usersController.deleteUser(user, (err: Error | null, deleted: boolean) => {
+      if (err || !deleted) {
+        response.status(500).send("Something went wrong during deletion");
+      } else {
+        response.status(200).send("User deleted");
+      }
+    });
   })
 });
 

@@ -27,18 +27,12 @@ export function addNewUser(
   });
 }
 
-export function deleteUser(id: string, next: (err: Error | null, deleted: boolean) => any): void {
-  User.findById(id, (err, user) => {
-    if (err) { next(err, false) }
-    else if (user == null) { next(new UserNotFoundError(), false) }
-    else {
-      user.deleteOne((err, _deletedUser) => {
-        if (err) {
-          next(err, false)
-        } else {
-          next(null, true)
-        }
-      })
+export function deleteUser(user: IProfile, next: (err: Error | null, deleted: boolean) => any): void {
+  user.deleteOne((err, _deletedUser) => {
+    if (err) {
+      next(err, false)
+    } else {
+      next(null, true)
     }
   })
   return;
