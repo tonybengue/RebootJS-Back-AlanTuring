@@ -78,20 +78,22 @@ router.delete("/", authenticationRequired, (request: Request, response: Response
   })
 });
 
-router.patch("/:userId", (request, response) => {
-  const id = request.params["userId"];
-  const data = request.body;
-  if (data["firstname"] == undefined && data["lastname"] == undefined) {
-    response.status(400).send("Please provide a lastname or a firstname");
-    return;
-  }
-  usersController.updateUser(id, data, (err, updated) => {
-    if (err || !updated) {
-      response.status(500).send("Something went wrong during update");
-    } else {
-      response.status(200).send("User updated");
+router.patch("/", authenticationRequired, (request, response) => {
+  User.findById((request.user as any)._id).then(user => {
+    if (!user) throw Error('User not found');
+    const data = request.body;
+    if (data["firstname"] == undefined && data["lastname"] == undefined) {
+      response.status(400).send("Please provide a lastname or a firstname");
+      return;
     }
-  })
+    usersController.updateUser(user, data, (err, updated) => {
+      if (err || !updated) {
+        response.status(500).send("Something went wrong during update");
+      } else {
+        response.status(200).send("User updated");
+      }
+    })
+  });
 });
 
 export default router;
