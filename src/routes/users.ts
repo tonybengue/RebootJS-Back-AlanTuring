@@ -15,13 +15,10 @@ router.get("/", authenticationRequired, (request: Request, response: Response) =
 
 });
 
-router.get("/me", authenticationRequired, (request: Request, response: Response) => {
-  User.findById((request.user as any)._id).then(
-    user => {
-      if (!user) throw Error('User not found');
-      response.json(user.getSafeProfile());
-    }
-  );
+router.get("/me", authenticationRequired, async (request: Request, response: Response) => {
+  const user = await User.findById((request.user as any)._id)
+  if (!user) throw Error('User not found');
+  response.json(user.getSafeProfile());
 });
 
 router.get("/:userId", authenticationRequired, (request: Request, response: Response) => {
@@ -65,35 +62,33 @@ router.post("/", (request: Request, response: Response) => {
   });
 });
 
-router.delete("/", authenticationRequired, (request: Request, response: Response) => {
-  User.findById((request.user as any)._id).then(user => {
-    if (!user) throw Error('User not found');
-    usersController.deleteUser(user, (err: Error | null, deleted: boolean) => {
-      if (err || !deleted) {
-        response.status(500).send("Something went wrong during deletion");
-      } else {
-        response.status(200).send("User deleted");
-      }
-    });
-  })
+router.delete("/", authenticationRequired, async (request: Request, response: Response) => {
+  const user = await User.findById((request.user as any)._id)
+  if (!user) throw Error('User not found');
+  usersController.deleteUser(user, (err: Error | null, deleted: boolean) => {
+    if (err || !deleted) {
+      response.status(500).send("Something went wrong during deletion");
+    } else {
+      response.status(200).send("User deleted");
+    }
+  });
 });
 
-router.patch("/", authenticationRequired, (request, response) => {
-  User.findById((request.user as any)._id).then(user => {
-    if (!user) throw Error('User not found');
-    const data = request.body;
-    if (data["firstname"] == undefined && data["lastname"] == undefined) {
-      response.status(400).send("Please provide a lastname or a firstname");
-      return;
+router.patch("/", authenticationRequired, async (request: Request, response: Response) => {
+  const user = await User.findById((request.user as any)._id)
+  if (!user) throw Error('User not found');
+  const data = request.body;
+  if (data["firstname"] == undefined && data["lastname"] == undefined) {
+    response.status(400).send("Please provide a lastname or a firstname");
+    return;
+  }
+  usersController.updateUser(user, data, (err, updatedUser) => {
+    if (err || !updatedUser) {
+      response.status(500).send("Something went wrong during update");
+    } else {
+      response.status(200).json(updatedUser.getSafeProfile());
     }
-    usersController.updateUser(user, data, (err, updatedUser) => {
-      if (err || !updatedUser) {
-        response.status(500).send("Something went wrong during update");
-      } else {
-        response.status(200).json(updatedUser.getSafeProfile());
-      }
-    })
-  });
+  })
 });
 
 export default router;
