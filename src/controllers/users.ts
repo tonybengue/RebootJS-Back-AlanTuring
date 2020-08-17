@@ -1,5 +1,4 @@
 import { User, IProfile } from "../models/users";
-import { UserNotFoundError } from "../errors";
 
 export function allUsers(next: (err: Error | null, users: IProfile[] | null) => any) {
   User.find({}, '_id lastname firstname status updatedAt', (err, res) => {

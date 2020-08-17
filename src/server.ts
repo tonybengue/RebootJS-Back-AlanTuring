@@ -10,6 +10,7 @@ import usersRoutes from "./routes/users";
 import loginRoute from "./routes/login";
 import registerRoute from "./routes/register";
 import logoutRoute from "./routes/logout";
+import messagesRoute from "./routes/messages";
 
 import connectMongo from 'connect-mongo';
 import mongoose from "mongoose";
@@ -47,6 +48,7 @@ export function createExpressApp(config: IConfig): express.Express {
   app.use("/login", loginRoute);
   app.use("/register", registerRoute);
   app.use('/logout', logoutRoute);
+  app.use('/messages', messagesRoute);
 
   return app;
 }
