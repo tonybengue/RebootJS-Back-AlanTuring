@@ -10,6 +10,7 @@ export interface IProfile extends Document {
   getSafeProfile(): ISafeProfile;
   setPassword(password: string): void;
   validatePassword(password: string): boolean;
+  updateSeen(conversationId: string, seenDate: string): void;
 }
 
 export type IUser = Pick<
@@ -40,6 +41,11 @@ profileSchema.methods.getSafeProfile = function (): ISafeProfile {
   const { _id, email, lastname, firstname, status, updatedAt, conversationsSeen } = this;
   return { _id, email, lastname, firstname, status, updatedAt, conversationsSeen };
 };
+
+profileSchema.methods.updateSeen = function (conversationId: string, seenDate: string): void {
+  this.conversationsSeen = { ...this.conversationsSeen, [conversationId]: seenDate };
+  this.markModified('conversationsSeen');
+}
 
 profileSchema.pre("save", function () {
   this.set({ updatedAt: new Date() });

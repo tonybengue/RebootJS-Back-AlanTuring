@@ -74,6 +74,15 @@ router.delete("/", authenticationRequired, async (request: Request, response: Re
   });
 });
 
+router.patch("/conversations-seen", authenticationRequired, async (request: Request, response: Response) => {
+  const user = await User.findById((request.user as any)._id);
+  if (!user) throw Error('User not found');
+  const { conversationId, seenDate } = request.body;
+  if (!conversationId || !seenDate) response.sendStatus(400);
+  await usersController.updateConversationsSeen(user, conversationId, seenDate);
+  response.json(user.getSafeProfile());
+});
+
 router.patch("/", authenticationRequired, async (request: Request, response: Response) => {
   const user = await User.findById((request.user as any)._id)
   if (!user) throw Error('User not found');

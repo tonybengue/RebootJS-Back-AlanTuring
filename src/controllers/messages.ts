@@ -8,7 +8,7 @@ export async function getAllMessages(user: IProfile, conversationId?: string): P
     const query = {
       $or: [
         { emitter: userId },
-        { target: userId }
+        { targets: userId }
       ],
       $and : [{ conversationId: conversationId }]
     }

@@ -47,3 +47,8 @@ export function updateUser(user: IProfile, data: any, next: (err: Error | null, 
     else { next(null, user) }
   })
 }
+
+export async function updateConversationsSeen(user: IProfile, conversationId: string, seenDate: string) : Promise<void> {
+  user.updateSeen(conversationId, seenDate);
+  await user.save();
+}
