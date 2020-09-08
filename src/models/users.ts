@@ -5,6 +5,7 @@ export interface IProfile extends Document {
   lastname: string;
   firstname: string;
   status: string;
+  socket: string;
   updatedAt: string;
   conversationsSeen: { [conversationId: string]: string };
   getSafeProfile(): ISafeProfile;
@@ -25,9 +26,10 @@ const profileSchema = new Schema({
   lastname: { type: String, required: true },
   firstname: { type: String, required: true },
   password: { type: String, required: true },
-  status: { type: String, required: true, default: "Offline" },
+  status: { type: String, required: true, default: "offline" },
   updatedAt: { type: Date },
   conversationsSeen: {},
+  socket: { type: String },
 });
 
 profileSchema.methods.setPassword = function (password: string): void {

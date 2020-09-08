@@ -15,7 +15,9 @@ import messagesRoute from "./routes/messages";
 import connectMongo from 'connect-mongo';
 import mongoose from "mongoose";
 import { authenticationInitialize, authenticationSession } from "./controllers/authentication";
+import { initializeSockets } from "./socket";
 const MongoStore = connectMongo(session);
+const sessionStore = new MongoStore({mongooseConnection: mongoose.connection});
 
 export function createExpressApp(config: IConfig): express.Express {
   const { express_debug, session_cookie_name, session_secret } = config;
@@ -31,7 +33,7 @@ export function createExpressApp(config: IConfig): express.Express {
     secret: session_secret,
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({mongooseConnection: mongoose.connection})
+    store: sessionStore
   }));
   app.use(authenticationInitialize());
   app.use(authenticationSession());
@@ -58,7 +60,8 @@ const { PORT } = config;
 const app = createExpressApp(config);
 connect(config).then(
   () => {
-    app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`));
+    const server = app.listen(PORT, () => console.log(`Flint messenger listening at ${PORT}`));
+    initializeSockets(config, server, sessionStore);
   },
   (err) => console.error(`Was not able to connect to DB ${err}`)
 );
