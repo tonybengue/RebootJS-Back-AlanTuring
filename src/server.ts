@@ -44,7 +44,7 @@ export function createExpressApp(config: IConfig): express.Express {
   }) as ErrorRequestHandler);
 
   app.get("/", (req: Request, res: Response) => {
-    res.send("This is the boilerplate for Flint Messenger app");
+    res.send("This is the boilerplate for Flint Messenger app, via CodeSpace");
   });
   app.use("/users", usersRoutes);
   app.use("/login", loginRoute);
