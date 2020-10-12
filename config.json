@@ -1,4 +1,10 @@
 {
   "PORT": 3000,
+  "mongo_host": "cluster1.3o44r.mongodb.net",
+  "mongo_user": "tony_bengue",
+  "mongo_pass": "Lethilie1",
+  "mongo_database": "flint_messenger",
+
+  "mongo_debug": true,
   "express_debug": true
 }
