@@ -36,37 +36,63 @@
 // ]
 
 // export { User, existingUsers }
+// const newUser = new User();
+// newUser.status();
 
 // With mongoose
 import { Document, Schema, model, Model } from "mongoose";
+import { SHA256 } from "crypto-js";
 
 // Export the later verifications
 export interface IUser extends Document {
-    id: number;
     firstName: string;
     lastName: string;
     email: string;
+    conversationsSeen: {[convId: string]: Date};
+    socket?: string;
+    status: IUserStatus;
 
-    // methods
-    status(): () => string; 
+    // Evite de stocker le password
+    verifyPassword: (password: string) => boolean; 
+    setPassword: (password: string) => void;
+    getSafeUser: () => ISafeUser;
 }
-// const a: IUser = {
-//     id: 0,
-//     firstName: "coucou"
-// }
+
+type IUserStatus = 'online' | 'offline';
+type ISafeUser = Pick<IUser, 'firstName' | 'lastName' | 'email' | '_id' | 'conversationsSeen' | 'status'>
+
 
 // Definition of the schema
 const userSchema = new Schema({
-    firstName: {type: String, required: true},
-    lastName: {type: String, required: true},
-    email: {type: String, required: true, unique: true}, // as primary key
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    status: { type: String, required: true, default: 'offline' },
+    email: { type: String, required: true, unique: true}, // as primary key
+    password: { type: String, required: true },
+    socket: { type: String },
+    conversationsSeen : {}
 });
-// Methods of the schema
-userSchema.methods.status = function() {
-    return `User : ${this.firstName}`
+
+userSchema.methods.getSafeUser = function() {
+    const { _id, firstName, lastName, email, conversationsSeen, status } = this;
+    return { _id, firstName, lastName, email, conversationsSeen, status };
+}
+
+/* Methods of the schema */
+// userSchema.methods.status = function() {
+//     return `User : ${this.firstName}`
+// }
+
+// Verify the password of the user
+userSchema.methods.verifyPassword = function(password: string) {
+    return this.password === SHA256(password).toString(); // hash password
+}
+
+// Set the password for the user
+userSchema.methods.setPassword = function(password: string) {
+    this.password = SHA256(password).toString();
 }
 
 // Link of the schema and the interface
 export const User = model<IUser, Model<IUser>>("User", userSchema); // name of the collection, 
-// const newUser = new User();
-// newUser.status();
+

@@ -2,71 +2,39 @@ import { IUser, User } from "../models/usersModel"; //existingUsers
 import { DatabaseError } from "../controllers/errors/databaseError";
 import { UserNotFoundError } from "../controllers/errors/userNotFound";
 
+// Get all users
+export function getUsers(callback: (users: IUser[]) => void): void {
+    User.find({}, (err, users) => {
+        if (err) { throw new DatabaseError(err); }
+        // tableau de hash
+        callback(users)
+    });
+}
+
 // Create an User
-export function createUser(firstName: string, lastName: string, email: string): IUser {
-    const user = new User({firstName, lastName, email});
-    // existingUsers.push(user); // old way for test
+export function createUser(firstName: string, lastName: string, email: string, password: string) : IUser {
+    const user = new User({ firstName, lastName, email });
+    user.setPassword(password);
     user.save();
+    
     return user;
 }
 
-// Get all users
-export function getUsers() {
-    // User.find();
-
-    // return existingUsers;
-}
+// export function getUsers() : Promise<IUser[]>{
+//     return User.find({}, '_id firstName lastName').then(res => {return res});
+// }
 
 // Get an user by Id
-// Use IUser instead of user with mongoose
-// callback : function in a function (next / done)
-export function getUser(id: number, callback: (user: IUser | null) => void): void{
-    // return existingUsers.find(user => user.id === id); // old way 
-
-    // Mongoose by Id
+export function getUser(id: string, callback: (user: IUser | null) => void): void {
     User.findById(id, (err, res) => {
         if(err) throw new DatabaseError(err) // Errors
-        // if(!res) { return }
+        console.log("USER FOUND", id)
         callback(res); // Response
     });
 }
 
 // Modify an user by it's id
-export function updateUser(id: number, firstName?: string, lastName?: string, email?: string,  callback?: {user: IUser}) {
-    // const filteredUser = getUser(id);
-    // Il faut s'arreter (guard) => angostique
-    // if(!filteredUser) {
-    //     throw new UserNotFoundError(id, "The user is not found"); //arrete la fonction
-    //     // response.status(404).send('user not found');
-    //     // return
-    // }
-
-    // // return existingUsers.find(user => user.id === id);
-    // // const updateUsers: User = {
-    // const updateUsers = {
-    //     ...filteredUser,
-    //     firstName: firstName || filteredUser.firstName,
-    //     lastName: lastName || filteredUser.lastName,
-    //     email: email || filteredUser.email
-    // }
-
-  // const updatedUser = {
-  //   ...filteredUser,
-  //   firstname: firstname || filteredUser.firstname,
-  //   lastname: lastname || filteredUser.lastname,
-  //   email: email || filteredUser.email
-  // }
-
-  // TODO
-//   const user = User.findById(id)
-//   if(!user ){
-//       //404
-//   }
-// //   user.updateOne(firstName: firstName,lastName: lastName)
-//   user.firstName = firstName; || user.firstName;
-//   user.save()
-
-//   return user;
+export function updateUser(id: string, firstName?: string, lastName?: string, email?: string, callback?: (user: IUser | null) => void) {
 
     User.findById(id, (err, user) => {
         if(err) throw new DatabaseError(err);
@@ -76,12 +44,34 @@ export function updateUser(id: number, firstName?: string, lastName?: string, em
         user.lastName = lastName || user.lastName;
         user.email = email || user.email;
 
+        // user.save();
         user.save();
-        // if(callback) callback(user);
-    })
+
+        if (callback) callback(user);
+    });
 }
 
-export function deleteUser(id: number) {
-    // return existingUsers.find(user => user.id === id);
+// Delete an user
+export function deleteUser(id: string, callback: (user: IUser | null) => void ):void {
+    User.findByIdAndDelete(id, (err, user) => {
+        if(err) throw new DatabaseError(err);
+        if(!user) throw new UserNotFoundError(id, "User not found");
+    //     if(err) throw new DatabaseError(err) // Errors
+    //     // if(!res) { return }
+        callback(user);
+    });
+
+    // const id = parseInt(req.params["userId"]);
+    // const filteredUser = users.find(user => user.id === id);
+    // res.send(`User ${filteredUser.firstName} ${filteredUser.lastName} at ${filteredUser.id} is deleted`)
+
+    // users.splice( id - 1, 1); // delete the user
 }
 
+export function updateConversationSeen(user: IUser, conversationId: string): Promise<IUser>{
+    user.conversationsSeen = {
+      ...user.conversationsSeen,
+      [conversationId]: new Date()
+    }
+    return user.save()
+  }

@@ -1,8 +1,8 @@
 export class UserNotFoundError extends Error {
-    id: number;
+    id: string;
 
-    constructor(id: number, messsage: string) {
-        super(); // construit le parent
+    constructor(id: string, message: string) {
+        super(message);
         this.id = id;
     }
 }

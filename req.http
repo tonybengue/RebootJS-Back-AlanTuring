@@ -1,0 +1,59 @@
+### Index page
+GET http://localhost:3000/
+
+### Get all users
+GET http://localhost:3000/api/users
+
+### Get an user by its id
+GET http://localhost:3000/api/users/5f859e70f17f8e42c8e0dae2
+
+### Create an user
+POST http://localhost:3000/api/users
+Content-Type: application/json
+{
+  "firstName": "Daniel",
+  "lastName": "Bengué",
+  "email": "danielbengue@hotmail.fr",
+  "password": "test&"
+}
+
+### Update an user
+PATCH http://localhost:3000/api/users
+Content-Type: application/json
+{
+	"firstName": "Daniel",
+	"lastName": "Bengué",
+	"email": "danielbengue@hotmail.fr"
+}
+
+### Delete an user
+DELETE http://localhost:3000/api/users
+Content-Type: application/json
+{
+	"firstName": "Daniel",
+	"lastName": "Bengué",
+	"email": "danielbengue@hotmail.fr"
+}
+
+### Get the log user
+GET http://localhost:3000/api/users/me
+
+### Log the user
+POST http://localhost:3000/api/login
+Content-Type: application/json
+{
+	"username": "danielbengue@hotmail.fr",
+	"password": "test&"
+}
+
+### Get all the messages
+GET http://localhost:3000/api/messages
+
+### Post all the messages
+POST http://localhost:3000/api/messages
+Content-Type: application/json
+{
+	"content" : "Hey Tony",
+	"targets" : ["5f969e769d8cf63e88a1b6ad", "5f8ebaeb2dc49b06b841cacf"],
+	"conversationId": "1234"
+}
