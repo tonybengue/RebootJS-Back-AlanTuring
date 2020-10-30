@@ -32,6 +32,6 @@ passport.deserializeUser((id: string, done) => {
     })
 });
 
-// Liens entre passport et session
+// Link between passport and session
 export const authenticationInitialize = () => passport.initialize();
 export const authenticationSession = () => passport.session();

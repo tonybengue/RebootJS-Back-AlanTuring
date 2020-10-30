@@ -2,15 +2,6 @@ import { IUser, User } from "../models/usersModel"; //existingUsers
 import { DatabaseError } from "../controllers/errors/databaseError";
 import { UserNotFoundError } from "../controllers/errors/userNotFound";
 
-// Get all users
-export function getUsers(callback: (users: IUser[]) => void): void {
-    User.find({}, (err, users) => {
-        if (err) { throw new DatabaseError(err); }
-        // tableau de hash
-        callback(users)
-    });
-}
-
 // Create an User
 export function createUser(firstName: string, lastName: string, email: string, password: string) : IUser {
     const user = new User({ firstName, lastName, email });
@@ -20,6 +11,14 @@ export function createUser(firstName: string, lastName: string, email: string, p
     return user;
 }
 
+// Get all users
+export function getUsers(callback: (users: IUser[]) => void): void {
+    User.find({}, (err, users) => {
+        if (err) { throw new DatabaseError(err); }
+        // tableau de hash
+        callback(users)
+    });
+}
 // export function getUsers() : Promise<IUser[]>{
 //     return User.find({}, '_id firstName lastName').then(res => {return res});
 // }
@@ -51,7 +50,7 @@ export function updateUser(id: string, firstName?: string, lastName?: string, em
     });
 }
 
-// Delete an user
+// TODO Delete an user
 export function deleteUser(id: string, callback: (user: IUser | null) => void ):void {
     User.findByIdAndDelete(id, (err, user) => {
         if(err) throw new DatabaseError(err);
@@ -68,10 +67,10 @@ export function deleteUser(id: string, callback: (user: IUser | null) => void ):
     // users.splice( id - 1, 1); // delete the user
 }
 
-export function updateConversationSeen(user: IUser, conversationId: string): Promise<IUser>{
+export function updateConversationSeen(user: IUser, conversationId: string): Promise<IUser> {
     user.conversationsSeen = {
       ...user.conversationsSeen,
       [conversationId]: new Date()
     }
     return user.save()
-  }
+}

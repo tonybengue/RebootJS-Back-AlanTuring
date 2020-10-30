@@ -43,6 +43,15 @@ export function createExpressApp(config: IConfig): express.Express {
     // }));
   }
 
+  // Secure cookies
+  if(process.env.NODE_ENV === 'production'){
+    app.set('trust proxy', 1);
+    sessionConfig.cookie = {
+      secure: true,
+      sameSite: 'none'
+    }
+  }
+
   app.use(session(sessionConfig));
   app.use(authenticationInitialize());
   app.use(authenticationSession());
